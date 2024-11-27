@@ -1,10 +1,10 @@
-# 오프닝!
+# 아이신나
 ___
 ### 프로젝트 환경
 
     SW Academy 아이신나(AI 여행 플래너)\
     개발 환경: 스프링 부트(IntelliJ IDE) + MySQL\
-    서버 환경: AWS EC2 + OCI Instance(ubuntu) + S3
+    서버 환경: AWS EC2 + OCI Instance(ubuntu-MySQL) + S3
 ___
 ### 깃 커밋 컨벤션
 

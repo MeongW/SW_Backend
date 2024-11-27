@@ -54,19 +54,7 @@ public class WebSecurityConfig {
                                 SessionCreationPolicy.STATELESS
                         ))
                 .authorizeHttpRequests(request ->
-                        request
-                            /*
-                                .requestMatchers(
-                                "/",
-                                "/api/v1/*"
-                                )
-                                .permitAll()
-                                .requestMatchers("/api/v1/user/*")
-                                .hasRole("USER")
-                                .requestMatchers("/api/v1/admin/*")
-                                .hasRole("ADMIN")
-                            */
-                                .anyRequest()
+                        request.anyRequest()
                                 .permitAll()
                 ).oauth2Login(oauth2 ->
                         oauth2.authorizationEndpoint(endpoint ->

@@ -9,6 +9,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -24,6 +25,9 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     private final JwtProvider jwtProvider;
     private final ObjectMapper objectMapper;
 
+    @Value("${frontend.app.name}")
+    private String frontUrl;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
@@ -32,23 +36,15 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         String accessToken = jwtProvider.createToken(authentication.getName(), TokenType.ACCESS_TOKEN);
         String refreshToken = jwtProvider.createToken(authentication.getName(), TokenType.REFRESH_TOKEN);
 
-        Cookie cookie = new Cookie("refresh_token", refreshToken);
-        cookie.setMaxAge(24 * 60 * 60);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/");
+//        Cookie cookie = new Cookie("refresh_token", refreshToken);
+//        cookie.setMaxAge(24 * 60 * 60);
+//        cookie.setHttpOnly(true);
+//        cookie.setSecure(true);
+//        cookie.setPath("/");
 
-        response.addCookie(cookie);
-        response.setHeader("Authorization", "Bearer " + accessToken);
+//        response.addCookie(cookie);
 
-        Map<String, String> responseBody = new HashMap<>();
-        responseBody.put("accessToken", accessToken);
-//        responseBody.put("message", userDetails.getUser().getAbti() == null ? "Need ABTI" : "Login successful");
-
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType("application/json");
-        response.getWriter().write(objectMapper.writeValueAsString(responseBody));
-        response.getWriter().flush();
+        response.sendRedirect(frontUrl + "login?token=" + accessToken);
 
         System.out.println("refresh token: " + refreshToken + "\naccess token: " + accessToken);
     }
