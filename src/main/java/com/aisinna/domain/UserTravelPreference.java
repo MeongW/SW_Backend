@@ -30,7 +30,6 @@ public class UserTravelPreference extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private TravelPreference.Duration duration;
 
-    @OneToOne
-    @JoinColumn(name="user_id", nullable=false)
-    private SocialUser socialUser;
+    @OneToOne(mappedBy = "userTravelPreference", optional = false) // UserInfo와 양방향 관계 설정
+    private UserInfo userInfo;
 }

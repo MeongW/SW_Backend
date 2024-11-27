@@ -1,5 +1,6 @@
 package com.aisinna.oauth2.domain;
 
+import com.aisinna.domain.UserInfo;
 import com.aisinna.domain.UserTravelPreference;
 import com.aisinna.oauth2.domain.enums.Role;
 import com.aisinna.oauth2.domain.enums.SocialType;
@@ -47,8 +48,9 @@ public class SocialUser {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @OneToOne(mappedBy = "socialUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private UserTravelPreference userTravelPreference;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_info_id")
+    private UserInfo userInfo;
 
     @Builder
     public SocialUser(String email, SocialType socialType, Role userRole, String providerId) {
