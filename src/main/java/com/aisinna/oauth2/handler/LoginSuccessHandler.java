@@ -44,7 +44,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
 //        response.addCookie(cookie);
 
-        response.sendRedirect(frontUrl + "login?token=" + accessToken);
+        response.sendRedirect(frontUrl + "my-travel?token=" + accessToken);
 
         System.out.println("refresh token: " + refreshToken + "\naccess token: " + accessToken);
     }
