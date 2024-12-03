@@ -27,11 +27,9 @@ public class TravelRecommend extends BaseEntity {
     @JoinColumn(name = "travel_plan_id", nullable = false)
     private TravelPlan travelPlan;
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_travel_recommend",
-            joinColumns = @JoinColumn(name = "travel_recommend_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_travel_id")
-    ) // UserTravel과 다대다 관계 정의
-    private List<UserTravel> userTravelList = new ArrayList<>();
+    @OneToMany(mappedBy = "travelRecommend", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserTravel> userTravels = new ArrayList<>();
+
+    @OneToMany(mappedBy = "travelRecommend", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TravelLike> travelLikes = new ArrayList<>();
 }

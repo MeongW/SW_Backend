@@ -2,7 +2,15 @@ package com.aisinna.domain;
 
 import com.aisinna.domain.enums.Emotion;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Builder
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name="travel_review")
 public class TravelReview extends BaseEntity {

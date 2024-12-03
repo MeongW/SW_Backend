@@ -1,10 +1,12 @@
 package com.aisinna.oauth2.service;
 
+import com.aisinna.domain.UserInfo;
 import com.aisinna.oauth2.domain.CustomUserDetails;
 import com.aisinna.oauth2.domain.enums.Role;
 import com.aisinna.oauth2.domain.enums.SocialType;
 import com.aisinna.oauth2.domain.SocialUser;
 import com.aisinna.oauth2.repository.SocialUserRepository;
+import com.aisinna.service.UserInfoService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +26,7 @@ import java.util.Optional;
 public class CustomOauth2UserService extends DefaultOAuth2UserService {
 
     private final SocialUserRepository socialUserRepository;
+    private final UserInfoService userInfoService;
 
     @Transactional
     @Override
@@ -69,6 +72,10 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
         }
 
         socialUserRepository.save(socialUser);
+        UserInfo userInfo = userInfoService.createUserInfo(socialUser);
+        if (userInfo == null) {
+            throw new RuntimeException("Failed to create user info.");
+        }
 
         return new CustomUserDetails(socialUser, oAuth2User.getAttributes());
     }

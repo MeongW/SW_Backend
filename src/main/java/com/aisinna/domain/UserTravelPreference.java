@@ -1,7 +1,5 @@
 package com.aisinna.domain;
 
-import com.aisinna.domain.enums.TravelPreference;
-import com.aisinna.oauth2.domain.SocialUser;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,23 +11,21 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 @Builder
-public class UserTravelPreference extends BaseEntity{
+public class UserTravelPreference extends BaseEntity {
 
-    @Enumerated(EnumType.STRING)
-    private TravelPreference.Purpose purpose;
+    @Column(nullable = false)
+    private String preferenceType;
 
-    @Enumerated(EnumType.STRING)
-    private TravelPreference.Activity activity;
+    @Column(nullable = false)
+    private String preferenceValue;
 
-    @Enumerated(EnumType.STRING)
-    private TravelPreference.Budget budget;
+    private int priority; // 우선순위
 
-    @Enumerated(EnumType.STRING)
-    private TravelPreference.Destination destination;
-
-    @Enumerated(EnumType.STRING)
-    private TravelPreference.Duration duration;
-
-    @OneToOne(mappedBy = "userTravelPreference", optional = false) // UserInfo와 양방향 관계 설정
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_info_id")
     private UserInfo userInfo;
+
+    public void setUserInfo(UserInfo userInfo) {
+        this.userInfo = userInfo;
+    }
 }

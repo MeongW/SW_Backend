@@ -1,11 +1,9 @@
 package com.aisinna.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 
-@Getter
-@Builder
+@Data
 public class FestivalDTO {
     @JsonProperty("addr1")
     private String addr1;
@@ -13,11 +11,26 @@ public class FestivalDTO {
     @JsonProperty("addr2")
     private String addr2;
 
+    @JsonProperty("booktour")
+    private String booktour;
+
+    @JsonProperty("cat1")
+    private String cat1;
+
+    @JsonProperty("cat2")
+    private String cat2;
+
+    @JsonProperty("cat3")
+    private String cat3;
+
     @JsonProperty("contentid")
     private String contentId;
 
     @JsonProperty("contenttypeid")
     private String contentTypeId;
+
+    @JsonProperty("createdtime")
+    private String createdTime;
 
     @JsonProperty("eventstartdate")
     private String eventStartDate;
@@ -31,11 +44,26 @@ public class FestivalDTO {
     @JsonProperty("firstimage2")
     private String firstImage2;
 
+    @JsonProperty("cpyrhtDivCd")
+    private String cpyrhtDivCd;
+
     @JsonProperty("mapx")
     private String mapX;
 
     @JsonProperty("mapy")
     private String mapY;
+
+    @JsonProperty("mlevel")
+    private String mlevel;
+
+    @JsonProperty("modifiedtime")
+    private String modifiedTime;
+
+    @JsonProperty("areacode")
+    private String areacode;
+
+    @JsonProperty("sigungucode")
+    private String sigungucode;
 
     @JsonProperty("tel")
     private String tel;

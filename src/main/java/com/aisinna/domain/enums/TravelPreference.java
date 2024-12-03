@@ -8,7 +8,7 @@ public class TravelPreference {
     // 여행 목적
     @Getter
     @AllArgsConstructor
-    public enum Purpose {
+    public enum Purpose implements TravelPreferenceValueProvider {
         NATURE_EXPLORATION("자연탐방"),
         BUSINESS_TRIP("출장"),
         VACATION("휴양"),
@@ -24,7 +24,7 @@ public class TravelPreference {
     // 여행지 유형
     @Getter
     @AllArgsConstructor
-    public enum Destination {
+    public enum Destination implements TravelPreferenceValueProvider {
         BEACH("해변"),
         CITY("도시"),
         SMALL_TOWN("작은 마을"),
@@ -36,7 +36,7 @@ public class TravelPreference {
     // 선호 활동
     @Getter
     @AllArgsConstructor
-    public enum Activity {
+    public enum Activity implements TravelPreferenceValueProvider {
         FOOD_TOUR("맛집 탐방"),
         HIKING("하이킹"),
         SHOPPING("쇼핑"),
@@ -52,7 +52,7 @@ public class TravelPreference {
     // 비용
     @Getter
     @AllArgsConstructor
-    public enum Budget {
+    public enum Budget implements TravelPreferenceValueProvider {
         LOW_BUDGET("저예산"),
         MEDIUM_BUDGET("중간 예산"),
         HIGH_BUDGET("고예산");
@@ -63,7 +63,7 @@ public class TravelPreference {
     // 여행 기간
     @Getter
     @AllArgsConstructor
-    public enum Duration {
+    public enum Duration implements TravelPreferenceValueProvider {
         WEEKEND("주말"),
         UNDER_WEEK("3~5일"),
         OVER_WEEK("1주 이상");
