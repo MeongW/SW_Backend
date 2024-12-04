@@ -1,4 +1,4 @@
-package com.aisinna.dto;
+package com.aisinna.dto.tourAPI;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

@@ -2,7 +2,7 @@ package com.aisinna.service.tourAPI;
 
 import com.aisinna.converter.FestivalDetailConverter;
 import com.aisinna.dto.tourAPI.FestivalDTO;
-import com.aisinna.dto.OpenAPIResponseDTO;
+import com.aisinna.dto.tourAPI.OpenAPIResponseDTO;
 import com.aisinna.dto.tourAPI.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
