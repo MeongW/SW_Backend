@@ -1,7 +1,7 @@
 package com.aisinna.service.tourAPI;
 
 import com.aisinna.converter.FestivalDetailConverter;
-import com.aisinna.dto.FestivalDTO;
+import com.aisinna.dto.tourAPI.FestivalDTO;
 import com.aisinna.dto.OpenAPIResponseDTO;
 import com.aisinna.dto.tourAPI.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,6 +36,7 @@ public class FestivalService {
                 .queryParam("_type", "json")
                 .queryParam("arrange", "A")
                 .queryParam("eventStartDate", date)
+                .queryParam("eventEndDate", date)
                 .queryParam("serviceKey", serviceKey);
 
         if (!"0".equals(regionCode)) {
@@ -45,7 +46,7 @@ public class FestivalService {
         return fetchDetailDataList(builder.toUriString(), FestivalDTO.class);
     }
 
-    public FestivalDetailDTO getFestivalsDetails(String contentID) {
+    public FestivalDetailDTO.FestivalDetailResponseDTO getFestivalsDetails(String contentID) {
         String baseUrl = "https://apis.data.go.kr/B551011/KorService1";
 
         List<FestivalDetailImageDTO> images = fetchDetailDataList(
@@ -104,7 +105,8 @@ public class FestivalService {
         );
 
         FestivalDetailDTO detail = FestivalDetailConverter.convertToDetailDTO(common, images, info, intro);
-        return detail;
+
+        return FestivalDetailDTO.toResponse(detail);
     }
 
     public <T> List<T> getResponseItems(OpenAPIResponseDTO response, Class<T> responseType) {
