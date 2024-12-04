@@ -71,11 +71,14 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
             return new CustomUserDetails(socialUser, oAuth2User.getAttributes());
         }
 
-        socialUserRepository.save(socialUser);
         UserInfo userInfo = userInfoService.createUserInfo(socialUser);
+
         if (userInfo == null) {
             throw new RuntimeException("Failed to create user info.");
         }
+
+        socialUser.setUserInfo(userInfo);
+        socialUserRepository.save(socialUser);
 
         return new CustomUserDetails(socialUser, oAuth2User.getAttributes());
     }

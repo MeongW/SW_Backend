@@ -1,6 +1,9 @@
 package com.aisinna.service;
 
 import com.aisinna.domain.UserInfo;
+import com.aisinna.domain.enums.TravelPreference;
+import com.aisinna.global.exception.TravelExceptionHandler;
+import com.aisinna.global.exception.enums.ErrorMessage;
 import com.aisinna.repository.UserInfoRepository;
 import com.aisinna.domain.UserTravelPreference;
 import com.aisinna.dto.UserTravelPreferenceDTO;
@@ -9,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -26,22 +29,54 @@ public class UserInfoService {
     }
 
     @Transactional
-    public UserInfo addPreferences(UserInfo userInfo, List<UserTravelPreferenceDTO> preferences) {
+    public void addPreferences(UserInfo userInfo, List<UserTravelPreferenceDTO> preferences) {
 
-        // UserTravelPreference 생성 및 추가
+        // 기존 preferences 삭제
+        userInfo.clearPreferenceItem();
+
+        // 중복 확인용 Map 초기화
+        Map<TravelPreference.TravelPreferenceType, Set<Integer>> priorityCheckMap = new HashMap<>();
+        Map<TravelPreference.TravelPreferenceType, Set<TravelPreference.TravelPreferenceValue>> valueCheckMap = new HashMap<>();
+
         for (UserTravelPreferenceDTO dto : preferences) {
+            TravelPreference.TravelPreferenceType type = dto.getPreferenceType();
+            int priority = dto.getPriority();
+            TravelPreference.TravelPreferenceValue value = dto.getPreferenceValue();
+
+            if (!priorityCheckMap.containsKey(type)) {
+                priorityCheckMap.put(type, new HashSet<>());
+            }
+
+            if (!valueCheckMap.containsKey(type)) {
+                valueCheckMap.put(type, new HashSet<>());
+            }
+
+            if (priorityCheckMap.get(type).contains(priority)) {
+                throw new TravelExceptionHandler(ErrorMessage.DUPLICATION_PREFERENCE_PRIORITY);
+            }
+
+            if (valueCheckMap.get(type).contains(value)) {
+                throw new TravelExceptionHandler(ErrorMessage.DUPLICATION_PREFERENCE_VALUE);
+            }
+
             UserTravelPreference preference = UserTravelPreference.builder()
-                    .preferenceType(dto.getPreferenceType())
-                    .preferenceValue(dto.getPreferenceValue())
-                    .priority(dto.getPriority())
+                    .preferenceType(type)
+                    .preferenceValue(value)
+                    .priority(priority)
+                    .userInfo(userInfo)
                     .build();
 
             userInfo.addPreferenceItem(preference);
+
+            priorityCheckMap.get(type).add(priority);
+            valueCheckMap.get(type).add(value);
         }
 
         // 저장
-        return userInfoRepository.save(userInfo);
+        userInfoRepository.save(userInfo);
     }
+
+
 
     public void deleteUserInfo(SocialUser socialUser) {
 

@@ -9,6 +9,7 @@ import com.aisinna.global.exception.enums.ErrorMessage;
 import com.aisinna.global.exception.enums.SuccessMessage;
 import com.aisinna.oauth2.domain.CustomUserDetails;
 import com.aisinna.service.travel.*;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,6 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/travels")
 @RequiredArgsConstructor
+@Tag(name = "여행 정보", description = "여행 정보 관련 API")
 public class TravelController {
 
     private final TravelService travelService;

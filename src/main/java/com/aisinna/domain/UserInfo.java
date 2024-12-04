@@ -24,7 +24,7 @@ public class UserInfo extends BaseEntity {
     @OneToMany(mappedBy = "userInfo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TravelReview> travelReviewList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "userInfo", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "userInfo", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<UserTravelPreference> userTravelPreferenceList = new ArrayList<>();
 
     @OneToOne(mappedBy = "userInfo", optional = false)
@@ -36,5 +36,9 @@ public class UserInfo extends BaseEntity {
     public void addPreferenceItem(UserTravelPreference userTravelPreference) {
         userTravelPreferenceList.add(userTravelPreference);
         userTravelPreference.setUserInfo(this);
+    }
+
+    public void clearPreferenceItem() {
+        this.userTravelPreferenceList.clear();
     }
 }

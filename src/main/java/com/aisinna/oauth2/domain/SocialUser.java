@@ -1,7 +1,6 @@
 package com.aisinna.oauth2.domain;
 
 import com.aisinna.domain.UserInfo;
-import com.aisinna.domain.UserTravelPreference;
 import com.aisinna.oauth2.domain.enums.Role;
 import com.aisinna.oauth2.domain.enums.SocialType;
 import jakarta.persistence.*;
@@ -48,7 +47,7 @@ public class SocialUser {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_info_id")
     private UserInfo userInfo;
 

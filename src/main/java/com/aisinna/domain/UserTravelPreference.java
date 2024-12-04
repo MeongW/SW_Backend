@@ -1,5 +1,6 @@
 package com.aisinna.domain;
 
+import com.aisinna.domain.enums.TravelPreference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,10 +15,12 @@ import lombok.NoArgsConstructor;
 public class UserTravelPreference extends BaseEntity {
 
     @Column(nullable = false)
-    private String preferenceType;
+    @Enumerated(EnumType.STRING)
+    private TravelPreference.TravelPreferenceType preferenceType;
 
     @Column(nullable = false)
-    private String preferenceValue;
+    @Enumerated(EnumType.STRING)
+    private TravelPreference.TravelPreferenceValue preferenceValue;
 
     private int priority; // 우선순위
 

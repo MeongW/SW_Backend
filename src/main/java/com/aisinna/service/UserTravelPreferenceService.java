@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -33,13 +34,15 @@ public class UserTravelPreferenceService {
     }
 
     public List<TravelPreferenceDTO> getAllPreferences() {
-        return List.of(
-                createPreferenceDTO("purpose", TravelPreference.Purpose.values()),
-                createPreferenceDTO("destination", TravelPreference.Destination.values()),
-                createPreferenceDTO("activity", TravelPreference.Activity.values()),
-                createPreferenceDTO("budget", TravelPreference.Budget.values()),
-                createPreferenceDTO("duration", TravelPreference.Duration.values())
-        );
+        return Arrays.stream(TravelPreference.TravelPreferenceValue.values())
+                .collect(Collectors.groupingBy(TravelPreference.TravelPreferenceValue::getType)) // Type별로 그룹핑
+                .entrySet()
+                .stream()
+                .map(entry -> createPreferenceDTO(
+                        entry.getKey().name().toUpperCase(),
+                        entry.getValue().toArray(new TravelPreference.TravelPreferenceValue[0])
+                ))
+                .collect(Collectors.toList());
     }
 
     private <E extends Enum<E> & TravelPreferenceValueProvider> TravelPreferenceDTO createPreferenceDTO(String category, E[] values) {

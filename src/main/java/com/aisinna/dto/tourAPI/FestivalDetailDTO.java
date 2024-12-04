@@ -93,23 +93,23 @@ public class FestivalDetailDTO {
     @AllArgsConstructor
     @Builder
     public static class FestivalDetailResponseDTO {
-        @Schema(name="축제 제목", example = "겨울, 청계천의 빛")
+        @Schema(description="축제 제목", example = "겨울, 청계천의 빛")
         private String title;
-        @Schema(name="축제 장소", example = "서울특별시 중구 청계천 청계광장 일대")
+        @Schema(description="축제 장소", example = "서울특별시 중구 청계천 청계광장 일대")
         private String eventPlace;
-        @Schema(name="축제 주소", example = "서울특별시 중구 태평로1가 1")
+        @Schema(description="축제 주소", example = "서울특별시 중구 태평로1가 1")
         private String addr1;
-        @Schema(name="축제 설명", example = "올해로 10회째를 맞는 ‘2024 겨울, 청계천의 빛’이 오는 12월13일부터 31일까지 서울 청계광장을 중심으로 펼쳐진다. 로마네스크 양식으로 연출한 대형 트리, 반짝이는 크리스마스 하우스와 곰인형 조형물, 트리를 장식한 크리스마스 요정들과 꼬마기차등  ‘자라나는 세대를 위한 꿈·희망·미래’라는 주제와 함께 동화적이고 사랑스러운 분위기를 빛으로 담았다.")
+        @Schema(description="축제 설명", example = "올해로 10회째를 맞는 ‘2024 겨울, 청계천의 빛’이 오는 12월13일부터 31일까지 서울 청계광장을 중심으로 펼쳐진다. 로마네스크 양식으로 연출한 대형 트리, 반짝이는 크리스마스 하우스와 곰인형 조형물, 트리를 장식한 크리스마스 요정들과 꼬마기차등  ‘자라나는 세대를 위한 꿈·희망·미래’라는 주제와 함께 동화적이고 사랑스러운 분위기를 빛으로 담았다.")
         private String overview;
-        @Schema(name="축제 이미지", examples = {
+        @Schema(description="축제 이미지", examples = {
                 "http://tong.visitkorea.or.kr/cms/resource/69/3433069_image2_1.jpg",
                 "http://tong.visitkorea.or.kr/cms/resource/70/3433070_image2_1.jpg",
                 "http://tong.visitkorea.or.kr/cms/resource/71/3433071_image2_1.jpg"
         })
         private List<String> originImgUrl;
-        @Schema(name="축제 진행 시간", example = "18:00~22:00")
+        @Schema(description="축제 진행 시간", example = "18:00~22:00")
         private String playTime;
-        @Schema(name="축제 비용", example = "무료")
+        @Schema(description="축제 비용", example = "무료")
         private String usetimeFestival;
     }
 

@@ -10,6 +10,7 @@ import com.aisinna.global.exception.enums.SuccessMessage;
 import com.aisinna.oauth2.domain.CustomUserDetails;
 import com.aisinna.service.UserInfoService;
 import com.aisinna.service.UserTravelPreferenceService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,6 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
+@Tag(name = "유저", description = "유저 정보 관련 API")
 public class UserController {
 
     private final UserInfoService userInfoService;
