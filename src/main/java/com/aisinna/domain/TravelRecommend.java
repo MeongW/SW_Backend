@@ -1,6 +1,5 @@
 package com.aisinna.domain;
 
-import com.aisinna.domain.enums.RegionCode;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,12 +18,12 @@ public class TravelRecommend extends BaseEntity {
 
     private String title;
     private String description;
-    private String theme;
-    @Enumerated(EnumType.STRING)
-    private RegionCode regionCode;
+    private String location;
+    private String image;
+    private String duration;
 
     @OneToOne(cascade = CascadeType.ALL) // TravelPlan과 일대일 관계 설정
-    @JoinColumn(name = "travel_plan_id", nullable = false)
+    @JoinColumn(name = "travel_plan_id")
     private TravelPlan travelPlan;
 
     @OneToMany(mappedBy = "travelRecommend", cascade = CascadeType.ALL, orphanRemoval = true)

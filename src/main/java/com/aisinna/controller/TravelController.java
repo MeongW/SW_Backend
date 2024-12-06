@@ -2,13 +2,18 @@ package com.aisinna.controller;
 
 import com.aisinna.domain.*;
 import com.aisinna.dto.*;
+import com.aisinna.dto.openAI.TravelThemeRecommendationDTO;
 import com.aisinna.global.dto.ApiResponse;
 import com.aisinna.global.dto.ApiResponseDTO;
 import com.aisinna.global.exception.TravelExceptionHandler;
 import com.aisinna.global.exception.enums.ErrorMessage;
 import com.aisinna.global.exception.enums.SuccessMessage;
 import com.aisinna.oauth2.domain.CustomUserDetails;
+import com.aisinna.service.UserTravelPreferenceService;
 import com.aisinna.service.travel.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +33,7 @@ public class TravelController {
     private final TravelLikeService travelLikeService;
     private final UserTravelService userTravelService;
     private final TravelReviewService travelReviewService;
+    private final UserTravelPreferenceService userTravelPreferenceService;
     private final TravelRecommendService travelRecommendService;
 
     // 사용자 필요
@@ -89,8 +95,6 @@ public class TravelController {
                     .userTravelId(oncomingTravel.getId())
                     .startDate(oncomingTravel.getStartDate().toString())
                     .endDate(oncomingTravel.getEndDate().toString())
-                    .region(oncomingTravel.getTravelRecommend().getRegionCode().getName())
-                    .theme(oncomingTravel.getTravelRecommend().getTheme())
                     .build();
 
             return ApiResponse.success(SuccessMessage.RESOURCE_FETCHED, oncomingTravelDTO);
@@ -125,27 +129,29 @@ public class TravelController {
     }
 
     // 여행지 좋아요(저장)
-    @PostMapping("/{recommendId}/like")
-    public ResponseEntity<ApiResponseDTO<TravelLike>> likeTravelRecommend(
-            @PathVariable Long recommendId,
+    @Operation(summary = "여행지 저장", description = "여행지 저장 API")
+    @PostMapping("/like")
+    public ResponseEntity<ApiResponseDTO<Void>> likeTravelRecommend(
+            @RequestBody TravelThemeRecommendationDTO recommend,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         if (userDetails == null) {
             throw new TravelExceptionHandler(ErrorMessage.AUTHENTICATION_REQUIRED);
         }
 
-        TravelLike like = travelLikeService.likeTravelRecommend(userDetails.getUser().getUserInfo(), recommendId);
-        return ApiResponse.success(SuccessMessage.RESOURCE_CREATED, like);
+        TravelLike like = travelLikeService.likeTravelRecommend(userDetails.getUser().getUserInfo(), recommend);
+        return ApiResponse.success(SuccessMessage.RESOURCE_CREATED);
     }
 
     // 여행지 좋아요(조회)
+    @Operation(summary = "여행지 저장 조회", description = "여행지 저장 조회 API")
     @GetMapping("/like")
-    public ResponseEntity<ApiResponseDTO<List<TravelLike>>> getLikedTravelRecommends(
+    public ResponseEntity<ApiResponseDTO<List<TravelThemeRecommendationDTO>>> getLikedTravelRecommends(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         if (userDetails == null) {
             throw new TravelExceptionHandler(ErrorMessage.AUTHENTICATION_REQUIRED);
         }
 
-        List<TravelLike> likedRecommends = travelLikeService.getLikedTravelRecommends(userDetails.getUser().getUserInfo());
+        List<TravelThemeRecommendationDTO> likedRecommends = travelLikeService.getLikedTravelRecommends(userDetails.getUser().getUserInfo());
         return ApiResponse.success(SuccessMessage.RESOURCE_FETCHED, likedRecommends);
     }
 
@@ -153,20 +159,33 @@ public class TravelController {
     // AI 추천 여행지(컨셉)
     // AI 추천 여행지 반환
     @GetMapping("/recommend")
-    public ResponseEntity<ApiResponseDTO<List<TravelRecommend>>> getRecommendTravel(@RequestParam(required = false) String theme) {
+    public ResponseEntity<ApiResponseDTO<List<TravelThemeRecommendationDTO>>> getRecommendTravel(@RequestParam(required = false) String theme) {
         List<TravelRecommend> recommendations;
 
         // Generate AI recommendations based on theme
-        recommendations = travelRecommendService.generateAIRecommendations(theme);
+        //recommendations = travelRecommendService.generateAIRecommendations(theme);
 
-        return ApiResponse.success(SuccessMessage.RESOURCE_FETCHED, recommendations);
+        return ApiResponse.success(SuccessMessage.RESOURCE_FETCHED);
     }
 
     // AI 추천 여행지(프론트->챗봇을 통한 저장)
+    @Operation(summary = "AI 추천 테마 생성", description = "AI 추천 테마 생성 API",
+            parameters = {
+                    @Parameter(in = ParameterIn.QUERY, name = "mapX", description = "경도", required = true, example = "126.97725"),
+                    @Parameter(in = ParameterIn.QUERY, name = "mapY", description = "위도", required = true, example = "37.570892"),
+                    @Parameter(in = ParameterIn.QUERY, name = "date", description = "조회 기준 날짜", required = true, example = "20240101")
+            })
     @PostMapping("/recommend")
-    public ResponseEntity<ApiResponseDTO<TravelRecommend>> createRecommend(@RequestParam String region, @RequestParam String theme) {
-        TravelRecommend recommend = travelService.generateTravelRecommend(region, theme);
-        return ApiResponse.success(SuccessMessage.RESOURCE_CREATED, recommend);
+    public ResponseEntity<ApiResponseDTO<List<TravelThemeRecommendationDTO>>> createRecommend(@RequestParam Double mapX, @RequestParam Double mapY, @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        if (userDetails == null) {
+            throw new TravelExceptionHandler(ErrorMessage.AUTHENTICATION_REQUIRED);
+        }
+
+        List<UserTravelPreferenceDTO> preferences = userTravelPreferenceService.getPreferencesByUserId(userDetails.getUser().getUserInfo());
+
+        List<TravelThemeRecommendationDTO> recommends = travelRecommendService.generateTravelRecommend(mapX, mapY, preferences);
+        return ApiResponse.success(SuccessMessage.RESOURCE_CREATED, recommends);
     }
 
 

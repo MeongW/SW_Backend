@@ -23,15 +23,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(err.getStatusCode()).body(response);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponseDTO<String>> handleGeneralException(Exception ex) {
-        ApiResponseDTO<String> response = ApiResponseDTO.<String>builder()
-                .header(ApiResponseDTO.HeaderDTO.builder()
-                        .resultCode("5000")
-                        .resultMsg("Internal Server Error")
-                        .build())
-                .body(ex.getMessage())
-                .build();
-        return ResponseEntity.status(500).body(response);
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<ApiResponseDTO<String>> handleGeneralException(Exception ex) {
+//        ApiResponseDTO<String> response = ApiResponseDTO.<String>builder()
+//                .header(ApiResponseDTO.HeaderDTO.builder()
+//                        .resultCode("5000")
+//                        .resultMsg("Internal Server Error")
+//                        .build())
+//                .body(ex.getMessage())
+//                .build();
+//        return ResponseEntity.status(500).body(response);
+//    }
 }

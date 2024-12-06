@@ -10,7 +10,8 @@ public enum ErrorMessage {
 
     // TravelPreference
     DUPLICATION_PREFERENCE_PRIORITY(400, "PREFERENCE4000", "선호 여행 답변의 우선순위가 중복되었습니다."),
-    DUPLICATION_PREFERENCE_VALUE(400, "PREFERENCE4001", "선호 여행 답변의 값이 중복되었습니다.")
+    DUPLICATION_PREFERENCE_VALUE(400, "PREFERENCE4001", "선호 여행 답변의 값이 중복되었습니다."),
+    PREFERENCE_NOT_FOUND(404, "PREFERENCE4041", "사용자의 선호 여행 답변이 존재하지 않습니다.")
     ;
 
 

@@ -1,15 +1,13 @@
 package com.aisinna.service.travel;
 
 import com.aisinna.domain.*;
-import com.aisinna.domain.enums.RegionCode;
 import com.aisinna.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -20,19 +18,9 @@ public class TravelService {
     private final TravelPlanRepository travelPlanRepository;
     private final TravelSpotRepository travelSpotRepository;
 
+    private final RestTemplate restTemplate;
 
-    // 추천 데이터 ChatGPT로 생성
-    public TravelRecommend generateTravelRecommend(String region, String theme) {
-        // 예시 데이터 (ChatGPT에서 생성된 데이터를 대체)
-        TravelRecommend recommend = TravelRecommend.builder()
-                .title("Discover the beauty of " + region)
-                .description("A perfect journey for " + theme + " enthusiasts.")
-                .theme(theme)
-                .regionCode(RegionCode.valueOf(region.toUpperCase()))
-                .build();
 
-        return travelRecommendRepository.save(recommend);
-    }
 
     // 추천 조회 시 TravelPlan 생성
     public TravelPlan createTravelPlanFromRecommend(Long recommendId) {

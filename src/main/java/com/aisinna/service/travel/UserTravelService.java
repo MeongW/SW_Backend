@@ -44,8 +44,6 @@ public class UserTravelService {
                         .userTravelId(travel.getId())
                         .startDate(travel.getStartDate().toString())
                         .endDate(travel.getEndDate().toString())
-                        .region(travel.getTravelRecommend().getRegionCode().getName())
-                        .theme(travel.getTravelRecommend().getTheme())
                         .build())
                 .collect(Collectors.toList());
     }
