@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,7 +24,7 @@ public class TravelSpotController {
 
     @Operation(summary = "여행지 저장", description = "여행지 저장 API")
     @PostMapping
-    public ResponseEntity<ApiResponseDTO<Void>> saveTravelSpot(OpenAPIResponseDTO dto) {
+    public ResponseEntity<ApiResponseDTO<Void>> saveTravelSpot(@RequestBody OpenAPIResponseDTO dto) {
         travelService.saveTravelSpots(dto);
 
         return ApiResponse.success(SuccessMessage.RESOURCE_CREATED);

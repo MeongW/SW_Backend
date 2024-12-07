@@ -27,11 +27,11 @@ public class UserController {
     private final UserInfoService userInfoService;
     private final UserTravelPreferenceService userTravelPreferenceService;
 
-    // 유저 선호 여행 컨셉 저장
-    public ApiResponse<?> saveUserTravelPreference() {
+        // 유저 선호 여행 컨셉 저장
+        public ApiResponse<?> saveUserTravelPreference() {
 
-        return null;
-    }
+            return null;
+        }
 
     // 선호 여행 컨셉 저장
     @PostMapping("/preferences")

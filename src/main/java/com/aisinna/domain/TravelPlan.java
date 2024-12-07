@@ -21,7 +21,7 @@ public class TravelPlan extends BaseEntity {
 
     private String shareID;
 
-    @OneToMany(mappedBy = "travelPlan")
+    @ManyToMany
     private List<TravelSpot> travelSpotList = new ArrayList<>();
 
     @OneToOne(mappedBy = "travelPlan")

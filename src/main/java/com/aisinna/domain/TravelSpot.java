@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -38,9 +40,4 @@ public class TravelSpot {
     private String sigungucode; // 시군구 코드
     private String tel; // 연락처
     private String title; // 장소 제목
-
-    @ManyToOne
-    @JoinColumn(name = "travel_plan_id")
-    private TravelPlan travelPlan;
-
 }
