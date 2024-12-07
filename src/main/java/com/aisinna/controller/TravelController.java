@@ -24,7 +24,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/travels")
+@RequestMapping("/api/v1/travels")
 @RequiredArgsConstructor
 @Tag(name = "여행 정보", description = "여행 정보 관련 API")
 public class TravelController {

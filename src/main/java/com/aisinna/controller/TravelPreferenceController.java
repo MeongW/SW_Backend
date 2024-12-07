@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RequiredArgsConstructor
-@RequestMapping("/travel-preferences")
+@RequestMapping("/api/v1/travel-preferences")
 @RestController
 @Tag(name = "여행 선호 정보", description = "여행 선호 정보 관련 API")
 public class TravelPreferenceController {
