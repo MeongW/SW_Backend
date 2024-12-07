@@ -1,6 +1,7 @@
 package com.aisinna.service.travel;
 
 import com.aisinna.domain.*;
+import com.aisinna.dto.TravelPlanDetailDTO;
 import com.aisinna.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,35 +33,39 @@ public class TravelService {
                 .shareID(UUID.randomUUID().toString())
                 .build();
 
-        List<TravelSpot> spots = generateSpotsForTravelPlan(travelPlan);
-        travelPlan.getTravelSpotList().addAll(spots);
+//        List<TravelSpot> spots = generateSpotsForTravelPlan(travelPlan);
+//        travelPlan.getTravelSpotList().addAll(spots);
+//
+//        return travelPlanRepository.save(travelPlan);
 
-        return travelPlanRepository.save(travelPlan);
+        return null;
     }
 
-    // 여행 장소 및 세부 정보 생성
-    private List<TravelSpot> generateSpotsForTravelPlan(TravelPlan travelPlan) {
-        List<TravelSpot> spots = new ArrayList<>();
 
-        // 예시 장소 데이터 (ChatGPT에서 생성된 데이터를 대체)
-        spots.add(createSpot(travelPlan, "Location 1", "서울시 중구", "", "http://image.com", "", "127.123", "37.123"));
-        spots.add(createSpot(travelPlan, "Location 2", "서울시 은평구", "", "http://image2.com", "", "128.456", "36.456"));
-        spots.add(createSpot(travelPlan, "Location 3", "서울시 강남구", "", "http://image3.com", "", "129.789", "35.789"));
-
-        return spots;
-    }
-
-    private TravelSpot createSpot(TravelPlan travelPlan, String title, String addr1, String addr2, String imageUrl, String imageUrl2, String mapX, String mapY) {
+    private TravelSpot createSpot(TravelPlanDetailDTO.TravelSpotDTO travelSpotDTO) {
 
         TravelSpot spot = TravelSpot.builder()
-                .title(title)
-                .addr1(addr1)
-                .addr2(addr2)
-                .firstImage(imageUrl)
-                .firstImage2(imageUrl2)
-                .mapX(mapX)
-                .mapY(mapY)
-                .travelPlan(travelPlan)
+                .addr1(travelSpotDTO.getAddr1())
+                .addr2(travelSpotDTO.getAddr2())
+                .areacode(travelSpotDTO.getAreacode())
+                .booktour(travelSpotDTO.getBooktour())
+                .cat1(travelSpotDTO.getCat1())
+                .cat2(travelSpotDTO.getCat2())
+                .cat3(travelSpotDTO.getCat3())
+                .contentid(travelSpotDTO.getContentid())
+                .contenttypeid(travelSpotDTO.getContenttypeid())
+                .createdtime(travelSpotDTO.getCreatedtime())
+                .dist(travelSpotDTO.getDist())
+                .firstimage(travelSpotDTO.getFirstimage())
+                .firstimage2(travelSpotDTO.getFirstimage2())
+                .cpyrhtDivCd(travelSpotDTO.getCpyrhtDivCd())
+                .mapx(travelSpotDTO.getMapx())
+                .mapy(travelSpotDTO.getMapy())
+                .mlevel(travelSpotDTO.getMlevel())
+                .modifiedtime(travelSpotDTO.getModifiedtime())
+                .sigungucode(travelSpotDTO.getSigungucode())
+                .tel(travelSpotDTO.getTel())
+                .title(travelSpotDTO.getTitle())
                 .build();
 
         return travelSpotRepository.save(spot);

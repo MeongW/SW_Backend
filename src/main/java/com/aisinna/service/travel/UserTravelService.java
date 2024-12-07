@@ -60,10 +60,6 @@ public class UserTravelService {
         List<TravelPlanDetailDTO.TravelSpotDTO> travelSpots = travelPlan.getTravelSpotList().stream()
                 .map(spot -> TravelPlanDetailDTO.TravelSpotDTO.builder()
                         .title(spot.getTitle())
-                        .address(spot.getAddr1())
-                        .mapX(spot.getMapX())
-                        .mapY(spot.getMapY())
-                        .imageUrl(spot.getFirstImage())
                         .build())
                 .toList();
 

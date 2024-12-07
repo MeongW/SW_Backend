@@ -35,6 +35,7 @@ public class TravelController {
     private final TravelReviewService travelReviewService;
     private final UserTravelPreferenceService userTravelPreferenceService;
     private final TravelRecommendService travelRecommendService;
+    private final TravelRecommendationCacheService travelRecommendationCacheService;
 
     // 사용자 필요
     // 내 여행 계획 모두
@@ -129,7 +130,7 @@ public class TravelController {
     }
 
     // 여행지 좋아요(저장)
-    @Operation(summary = "여행지 저장", description = "여행지 저장 API")
+    @Operation(summary = "여행지(테마) 저장", description = "여행지 저장 API")
     @PostMapping("/like")
     public ResponseEntity<ApiResponseDTO<Void>> likeTravelRecommend(
             @RequestBody TravelThemeRecommendationDTO recommend,
@@ -143,7 +144,7 @@ public class TravelController {
     }
 
     // 여행지 좋아요(조회)
-    @Operation(summary = "여행지 저장 조회", description = "여행지 저장 조회 API")
+    @Operation(summary = "여행지(테마) 저장 조회", description = "여행지 저장 조회 API")
     @GetMapping("/like")
     public ResponseEntity<ApiResponseDTO<List<TravelThemeRecommendationDTO>>> getLikedTravelRecommends(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -176,17 +177,39 @@ public class TravelController {
                     @Parameter(in = ParameterIn.QUERY, name = "date", description = "조회 기준 날짜", required = true, example = "20240101")
             })
     @PostMapping("/recommend")
-    public ResponseEntity<ApiResponseDTO<List<TravelThemeRecommendationDTO>>> createRecommend(@RequestParam Double mapX, @RequestParam Double mapY, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<ApiResponseDTO<List<TravelThemeRecommendationDTO>>> createRecommend(
+            @RequestParam Double mapX,
+            @RequestParam Double mapY,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         if (userDetails == null) {
             throw new TravelExceptionHandler(ErrorMessage.AUTHENTICATION_REQUIRED);
         }
 
-        List<UserTravelPreferenceDTO> preferences = userTravelPreferenceService.getPreferencesByUserId(userDetails.getUser().getUserInfo());
+        Long userId = userDetails.getUser().getUserId();
 
-        List<TravelThemeRecommendationDTO> recommends = travelRecommendService.generateTravelRecommend(mapX, mapY, preferences);
-        return ApiResponse.success(SuccessMessage.RESOURCE_CREATED, recommends);
+        // Redis에서 추천 데이터 조회
+        List<TravelThemeRecommendationDTO> cachedRecommendations = travelRecommendationCacheService.getRecommendations(userId.toString());
+        if (cachedRecommendations != null) {
+            return ApiResponse.success(SuccessMessage.RESOURCE_FETCHED, cachedRecommendations);
+        }
+
+        // 추천 데이터 생성
+        List<UserTravelPreferenceDTO> preferences = userTravelPreferenceService.getPreferencesByUserId(userDetails.getUser().getUserInfo());
+        List<TravelThemeRecommendationDTO> recommendations;
+        try {
+            recommendations = travelRecommendService.generateTravelRecommend(mapX, mapY, preferences);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new TravelExceptionHandler(ErrorMessage.FASTAPI_COMMUNICATION_FAILED);
+        }
+
+        // Redis에 저장
+        travelRecommendationCacheService.saveRecommendations(userId.toString(), recommendations);
+
+        return ApiResponse.success(SuccessMessage.RESOURCE_CREATED, recommendations);
     }
+
 
 
     // AI 추천 여행지 상세 조회
