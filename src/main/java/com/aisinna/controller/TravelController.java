@@ -159,9 +159,10 @@ public class TravelController {
     // 사용자 불필요
     // AI 추천 여행지(컨셉)
     // AI 추천 여행지 반환
+    @Operation(summary = "저장된 AI 추천 테마 조회(랜덤 2개)", description = "AI 추천 테마 조회 API")
     @GetMapping("/recommend")
     public ResponseEntity<ApiResponseDTO<List<TravelThemeRecommendationDTO>>> getRecommendTravel() {
-        return ApiResponse.success(SuccessMessage.RESOURCE_CREATED, travelLikeService.getTopLikedTravelRecommends());
+        return ApiResponse.success(SuccessMessage.RESOURCE_FETCHED, travelLikeService.getTopLikedTravelRecommends());
     }
 
     // AI 추천 여행지(프론트->챗봇을 통한 저장)
