@@ -1,7 +1,6 @@
 package com.aisinna.service.travel;
 
 import com.aisinna.domain.*;
-import com.aisinna.dto.TravelPlanDetailDTO;
 import com.aisinna.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -42,32 +41,34 @@ public class TravelService {
     }
 
 
-    private TravelSpot createSpot(TravelPlanDetailDTO.TravelSpotDTO travelSpotDTO) {
-
-        TravelSpot spot = TravelSpot.builder()
-                .addr1(travelSpotDTO.getAddr1())
-                .addr2(travelSpotDTO.getAddr2())
-                .areacode(travelSpotDTO.getAreacode())
-                .booktour(travelSpotDTO.getBooktour())
-                .cat1(travelSpotDTO.getCat1())
-                .cat2(travelSpotDTO.getCat2())
-                .cat3(travelSpotDTO.getCat3())
-                .contentid(travelSpotDTO.getContentid())
-                .contenttypeid(travelSpotDTO.getContenttypeid())
-                .createdtime(travelSpotDTO.getCreatedtime())
-                .dist(travelSpotDTO.getDist())
-                .firstimage(travelSpotDTO.getFirstimage())
-                .firstimage2(travelSpotDTO.getFirstimage2())
-                .cpyrhtDivCd(travelSpotDTO.getCpyrhtDivCd())
-                .mapx(travelSpotDTO.getMapx())
-                .mapy(travelSpotDTO.getMapy())
-                .mlevel(travelSpotDTO.getMlevel())
-                .modifiedtime(travelSpotDTO.getModifiedtime())
-                .sigungucode(travelSpotDTO.getSigungucode())
-                .tel(travelSpotDTO.getTel())
-                .title(travelSpotDTO.getTitle())
-                .build();
-
-        return travelSpotRepository.save(spot);
-    }
+//    public void saveTravelSpots(OpenAPIResponseDTO response) {
+//        // DTO 리스트를 엔티티 리스트로 변환
+//        List<TravelSpot> travelSpots = response.getResponse().getBody().getItems().getItem().stream()
+//                .map(item -> TravelSpot.builder()
+//                        .contentid(item.getContentid())
+//                        .addr1(item.getAddr1())
+//                        .addr2(item.getAddr2())
+//                        .areacode(item.getAreacode())
+//                        .booktour(item.getBooktour())
+//                        .cat1(item.getCat1())
+//                        .cat2(item.getCat2())
+//                        .cat3(item.getCat3())
+//                        .contenttypeid(item.getContenttypeid())
+//                        .createdtime(item.getCreatedtime())
+//                        .firstimage(item.getFirstimage())
+//                        .firstimage2(item.getFirstimage2())
+//                        .cpyrhtDivCd(item.getCpyrhtDivCd())
+//                        .mapx(item.getMapx())
+//                        .mapy(item.getMapy())
+//                        .mlevel(item.getMlevel())
+//                        .modifiedtime(item.getModifiedtime())
+//                        .sigungucode(item.getSigungucode())
+//                        .tel(item.getTel())
+//                        .title(item.getTitle())
+//                        .build())
+//                .collect(Collectors.toList());
+//
+//        // 데이터베이스에 저장
+//        travelSpotRepository.saveAll(travelSpots);
+//    }
 }

@@ -83,4 +83,11 @@ public class TourAPIController {
         FestivalDetailDTO.FestivalDetailResponseDTO festivalDetails = festivalService.getFestivalsDetails(contentId);
         return ApiResponse.success(SuccessMessage.RESOURCE_FETCHED, festivalDetails);
     }
+
+    @PostMapping("/save")
+    public ResponseEntity<ApiResponseDTO<Void>> saveTravelSpots(@RequestBody String jsonData) {
+
+
+        return ApiResponse.success(SuccessMessage.RESOURCE_CREATED);
+    }
 }

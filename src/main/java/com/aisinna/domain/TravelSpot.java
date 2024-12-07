@@ -1,6 +1,7 @@
 package com.aisinna.domain;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
@@ -13,8 +14,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 @Builder
-public class TravelSpot extends BaseEntity {
+public class TravelSpot {
 
+    @Id
+    private String contentid; // 콘텐츠 ID (고유 식별자)
     private String addr1; // 주소 (상세)
     private String addr2; // 주소 (부가)
     private String areacode; // 지역 코드
@@ -22,7 +25,6 @@ public class TravelSpot extends BaseEntity {
     private String cat1; // 대분류 카테고리
     private String cat2; // 중분류 카테고리
     private String cat3; // 소분류 카테고리
-    private String contentid; // 콘텐츠 ID (고유 식별자)
     private String contenttypeid; // 콘텐츠 유형 ID
     private String createdtime; // 생성 시간 (yyyyMMddHHmmss 형식)
     private String dist; // 현재 위치로부터의 거리

@@ -160,13 +160,8 @@ public class TravelController {
     // AI 추천 여행지(컨셉)
     // AI 추천 여행지 반환
     @GetMapping("/recommend")
-    public ResponseEntity<ApiResponseDTO<List<TravelThemeRecommendationDTO>>> getRecommendTravel(@RequestParam(required = false) String theme) {
-        List<TravelRecommend> recommendations;
-
-        // Generate AI recommendations based on theme
-        //recommendations = travelRecommendService.generateAIRecommendations(theme);
-
-        return ApiResponse.success(SuccessMessage.RESOURCE_FETCHED);
+    public ResponseEntity<ApiResponseDTO<List<TravelThemeRecommendationDTO>>> getRecommendTravel() {
+        return ApiResponse.success(SuccessMessage.RESOURCE_CREATED, travelLikeService.getTopLikedTravelRecommends());
     }
 
     // AI 추천 여행지(프론트->챗봇을 통한 저장)

@@ -6,6 +6,7 @@ import com.aisinna.dto.openAI.TravelRecommendationsResponseDTO;
 import com.aisinna.dto.openAI.TravelThemeRecommendationDTO;
 import com.aisinna.repository.TravelRecommendRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,5 +60,9 @@ public class TravelRecommendService {
                 .image(recommend.getImage())
                 .duration(recommend.getDuration())
                 .build());
+    }
+
+    public List<TravelRecommend> getRandom2TravelRecommends() {
+        return travelRecommendRepository.findRandom2TravelRecommends(PageRequest.of(0, 2));
     }
 }

@@ -5,7 +5,6 @@ import com.aisinna.domain.TravelRecommend;
 import com.aisinna.domain.UserInfo;
 import com.aisinna.dto.openAI.TravelThemeRecommendationDTO;
 import com.aisinna.repository.TravelLikeRepository;
-import com.aisinna.repository.TravelRecommendRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +18,6 @@ import java.util.List;
 public class TravelLikeService {
 
     private final TravelLikeRepository travelLikeRepository;
-    private final TravelRecommendRepository travelRecommendRepository;
     private final TravelRecommendService travelRecommendService;
 
     // TravelRecommend 좋아요 저장
@@ -40,6 +38,22 @@ public class TravelLikeService {
         List<TravelThemeRecommendationDTO> recommendDtoList = new ArrayList<>();
         for (TravelLike travelLike: travelLikes) {
             TravelRecommend recommend = travelLike.getTravelRecommend();
+            recommendDtoList.add(TravelThemeRecommendationDTO.builder()
+                    .title(recommend.getTitle())
+                    .description(recommend.getDescription())
+                    .location(recommend.getLocation())
+                    .image(recommend.getImage())
+                    .duration(recommend.getDuration())
+                    .build());
+        }
+
+        return recommendDtoList;
+    }
+
+    public List<TravelThemeRecommendationDTO> getTopLikedTravelRecommends() {
+        List<TravelRecommend> travelRecommends = travelRecommendService.getRandom2TravelRecommends();
+        List<TravelThemeRecommendationDTO> recommendDtoList = new ArrayList<>();
+        for (TravelRecommend recommend: travelRecommends) {
             recommendDtoList.add(TravelThemeRecommendationDTO.builder()
                     .title(recommend.getTitle())
                     .description(recommend.getDescription())
