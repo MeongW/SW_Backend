@@ -82,12 +82,12 @@ public class WebSecurityConfig {
         corsConfiguration.setAllowCredentials(true);
         corsConfiguration.setAllowedOrigins(
                 List.of(
-                        "https://jujeokjujeok.netlify.app",
+                        "https://api.smartcheers.site",
+                        "https://smartcheers.site",
+                        "https://152.67.209.153:8080",
+                        "http://152.67.209.153:8080",
                         "http://localhost:5173",
-                        "http://localhost:8080",
-                        "http://ec2-43-201-61-252.ap-northeast-2.compute.amazonaws.com:8080/",
-                        "https://ec2-43-201-61-252.ap-northeast-2.compute.amazonaws.com:8080/",
-                        "http://43-201-61-252:8080"
+                        "http://localhost:8080"
                 )
         );
         corsConfiguration.setAllowedHeaders(
