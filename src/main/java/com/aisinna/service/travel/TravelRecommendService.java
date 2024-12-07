@@ -6,6 +6,7 @@ import com.aisinna.dto.openAI.TravelRecommendationsResponseDTO;
 import com.aisinna.dto.openAI.TravelThemeRecommendationDTO;
 import com.aisinna.repository.TravelRecommendRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -24,11 +25,14 @@ public class TravelRecommendService {
     private final TravelRecommendRepository travelRecommendRepository;
     private final RestTemplate restTemplate;
 
+    @Value("${fastapi.url}")
+    private String fastApiUrl;
+
     // 추천 데이터 ChatGPT로 생성
     public List<TravelThemeRecommendationDTO> generateTravelRecommend(Double mapX, Double mapY, List<UserTravelPreferenceDTO> preferences) {
         // 예시 데이터 (ChatGPT에서 생성된 데이터를 대체)
 
-        String fastApiUrl = "http://api.smartcheers.site/ai/travel-recommendations"; // FastAPI 엔드포인트
+        String fastApiUrl = this.fastApiUrl + "/ai/travel-recommendations"; // FastAPI 엔드포인트
 
         try {
             // 요청 헤더 설정
