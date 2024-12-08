@@ -134,7 +134,7 @@ public class TravelController {
     // 여행지 좋아요(저장)
     @Operation(summary = "여행지(테마) 저장", description = "여행지 저장 API")
     @PostMapping("/like")
-    public ResponseEntity<ApiResponseDTO<Void>> likeTravelRecommend(
+    public ResponseEntity<ApiResponseDTO<CreateResponseDTO>> likeTravelRecommend(
             @RequestBody TravelThemeRecommendationDTO recommend,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         if (userDetails == null) {
@@ -142,19 +142,19 @@ public class TravelController {
         }
 
         TravelLike like = travelLikeService.likeTravelRecommend(userDetails.getUser().getUserInfo(), recommend);
-        return ApiResponse.success(SuccessMessage.RESOURCE_CREATED);
+        return ApiResponse.success(SuccessMessage.RESOURCE_CREATED, CreateResponseDTO.builder().success(true).message("성공").id(like.getId().toString()).build());
     }
 
     // 여행지 좋아요(조회)
     @Operation(summary = "여행지(테마) 저장 조회", description = "여행지 저장 조회 API")
     @GetMapping("/like")
-    public ResponseEntity<ApiResponseDTO<List<TravelThemeRecommendationDTO>>> getLikedTravelRecommends(
+    public ResponseEntity<ApiResponseDTO<List<TravelLikeResponseDTO>>> getLikedTravelRecommends(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         if (userDetails == null) {
             throw new TravelExceptionHandler(ErrorMessage.AUTHENTICATION_REQUIRED);
         }
 
-        List<TravelThemeRecommendationDTO> likedRecommends = travelLikeService.getLikedTravelRecommends(userDetails.getUser().getUserInfo());
+        List<TravelLikeResponseDTO> likedRecommends = travelLikeService.getLikedTravelRecommends(userDetails.getUser().getUserInfo());
         return ApiResponse.success(SuccessMessage.RESOURCE_FETCHED, likedRecommends);
     }
 

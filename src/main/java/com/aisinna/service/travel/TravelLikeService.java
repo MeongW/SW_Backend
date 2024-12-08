@@ -3,6 +3,7 @@ package com.aisinna.service.travel;
 import com.aisinna.domain.TravelLike;
 import com.aisinna.domain.TravelRecommend;
 import com.aisinna.domain.UserInfo;
+import com.aisinna.dto.TravelLikeResponseDTO;
 import com.aisinna.dto.openAI.TravelThemeRecommendationDTO;
 import com.aisinna.repository.TravelLikeRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,12 +34,13 @@ public class TravelLikeService {
     }
 
     // 사용자가 좋아요한 TravelRecommend 조회
-    public List<TravelThemeRecommendationDTO> getLikedTravelRecommends(UserInfo userInfo) {
+    public List<TravelLikeResponseDTO> getLikedTravelRecommends(UserInfo userInfo) {
         List<TravelLike> travelLikes = travelLikeRepository.findByUserInfo(userInfo);
-        List<TravelThemeRecommendationDTO> recommendDtoList = new ArrayList<>();
+        List<TravelLikeResponseDTO> recommendDtoList = new ArrayList<>();
         for (TravelLike travelLike: travelLikes) {
             TravelRecommend recommend = travelLike.getTravelRecommend();
-            recommendDtoList.add(TravelThemeRecommendationDTO.builder()
+            recommendDtoList.add(TravelLikeResponseDTO.builder()
+                    .id(recommend.getId())
                     .title(recommend.getTitle())
                     .description(recommend.getDescription())
                     .location(recommend.getLocation())
