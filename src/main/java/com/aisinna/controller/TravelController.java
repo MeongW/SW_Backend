@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -54,43 +55,41 @@ public class TravelController {
     // 내 여행 상세 조회
     // 특정 UserTravel에 맞춰 TravelPlan 반환
     @GetMapping("/my/{travelId}")
-    public ResponseEntity<ApiResponseDTO<TravelPlanDetailDTO>> getMyTravel(
+    public ResponseEntity<ApiResponseDTO<TravelPlanDTO>> getMyTravel(
             @PathVariable("travelId") Long travelId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         if (userDetails == null) {
             throw new TravelExceptionHandler(ErrorMessage.AUTHENTICATION_REQUIRED);
         }
 
-        TravelPlanDetailDTO travelPlan = userTravelService.getMyTravel(userDetails.getUser().getUserInfo(), travelId);
+        TravelPlanDTO travelPlan = userTravelService.getMyTravel(userDetails.getUser().getUserInfo(), travelId);
         return ApiResponse.success(SuccessMessage.RESOURCE_FETCHED, travelPlan);
     }
 
     // 내 여행 저장
     @PostMapping
-    public ResponseEntity<ApiResponseDTO<Object>> saveUserTravel(
+    public ResponseEntity<ApiResponseDTO<Void>> saveUserTravel(
             @RequestParam Long travelRecommendId,
-            @RequestParam LocalDate startDate,
-            @RequestParam LocalDate endDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyyMMdd") LocalDate startDate,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         if (userDetails == null) {
             throw new TravelExceptionHandler(ErrorMessage.AUTHENTICATION_REQUIRED);
         }
 
-        userTravelService.saveUserTravel(userDetails.getUser().getUserInfo(), travelRecommendId, startDate, endDate);
+        userTravelService.saveUserTravel(userDetails.getUser().getUserInfo(), travelRecommendId, startDate);
         return ApiResponse.success(SuccessMessage.RESOURCE_CREATED);
     }
 
     // 다가오는 1개
     @GetMapping("/oncoming")
-    public ResponseEntity<?> getOncomingTravel(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<ApiResponseDTO<OncomingTravelDTO>> getOncomingTravel(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
         if (userDetails == null) {
             throw new TravelExceptionHandler(ErrorMessage.AUTHENTICATION_REQUIRED);
         }
 
-        // 서비스에서 다가오는 여행을 가져옴
         UserTravel oncomingTravel = userTravelService.getOncomingTravel(userDetails.getUser().getUserInfo());
 
-        // 응답 DTO 생성
         if (oncomingTravel != null) {
             OncomingTravelDTO oncomingTravelDTO = OncomingTravelDTO.builder()
                     .userTravelId(oncomingTravel.getId())
@@ -101,12 +100,14 @@ public class TravelController {
             return ApiResponse.success(SuccessMessage.RESOURCE_FETCHED, oncomingTravelDTO);
         }
 
-        return ApiResponse.success(SuccessMessage.RESOURCE_FETCHED);
+        return ApiResponse.success(SuccessMessage.RESOURCE_FETCHED, null);
     }
 
     // 내 여행 삭제
     @DeleteMapping("/my/{travelId}")
-    public ResponseEntity<?> deleteMyTravel(@PathVariable("travelId") Long travelId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<ApiResponseDTO<Object>> deleteMyTravel(
+            @PathVariable("travelId") Long travelId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
         if (userDetails == null) {
             throw new TravelExceptionHandler(ErrorMessage.AUTHENTICATION_REQUIRED);
         }
@@ -117,7 +118,7 @@ public class TravelController {
 
     // 여행지 리뷰 작성
     @PostMapping("/{travelId}/review")
-    public ResponseEntity<?> postTravelReview(
+    public ResponseEntity<ApiResponseDTO<TravelReview>> postTravelReview(
             @PathVariable Long travelId,
             @RequestBody TravelReviewDTO reviewDTO,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -125,7 +126,8 @@ public class TravelController {
             throw new TravelExceptionHandler(ErrorMessage.AUTHENTICATION_REQUIRED);
         }
 
-        TravelReview travelReview = travelReviewService.createReview(userDetails.getUser().getUserInfo(), travelId, reviewDTO);
+        TravelReview travelReview = travelReviewService.createReview(
+                userDetails.getUser().getUserInfo(), travelId, reviewDTO);
         return ApiResponse.success(SuccessMessage.RESOURCE_CREATED, travelReview);
     }
 
@@ -210,8 +212,11 @@ public class TravelController {
 
     // AI 추천 여행지 상세 조회
     @GetMapping("/recommend/{recommendId}")
-    public ResponseEntity<ApiResponseDTO<TravelPlan>> getRecommendAndCreatePlan(@PathVariable Long recommendId) {
-        TravelPlan travelPlan = travelService.createTravelPlanFromRecommend(recommendId);
-        return ApiResponse.success(SuccessMessage.RESOURCE_FETCHED, travelPlan);
+    public ResponseEntity<TravelPlanDTO> createTravelPlan(
+            @PathVariable Long recommendId,
+            @RequestParam int people,
+            @RequestParam int cost) {
+        TravelPlan travelPlan = travelService.createTravelPlanFromRecommend(recommendId, people, cost);
+        return ResponseEntity.ok(TravelPlanDTO.fromEntity(travelPlan));
     }
 }

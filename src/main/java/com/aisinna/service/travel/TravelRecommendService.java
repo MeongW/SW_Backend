@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.*;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -29,6 +31,11 @@ public class TravelRecommendService {
     private String fastApiUrl;
 
     // 추천 데이터 ChatGPT로 생성
+    @Retryable(
+            maxAttempts = 3,                    // 최대 시도 횟수
+            backoff = @Backoff(delay = 1000)    // 재시도 간격 (밀리초)
+    )
+    @Transactional
     public List<TravelThemeRecommendationDTO> generateTravelRecommend(Double mapX, Double mapY, List<UserTravelPreferenceDTO> preferences) {
         // 예시 데이터 (ChatGPT에서 생성된 데이터를 대체)
 

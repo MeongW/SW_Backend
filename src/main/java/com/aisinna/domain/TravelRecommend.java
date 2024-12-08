@@ -1,10 +1,7 @@
 package com.aisinna.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +19,9 @@ public class TravelRecommend extends BaseEntity {
     private String image;
     private String duration;
 
-    @OneToOne(cascade = CascadeType.ALL) // TravelPlan과 일대일 관계 설정
+    @OneToOne
     @JoinColumn(name = "travel_plan_id")
+    @Setter
     private TravelPlan travelPlan;
 
     @OneToMany(mappedBy = "travelRecommend", cascade = CascadeType.ALL, orphanRemoval = true)

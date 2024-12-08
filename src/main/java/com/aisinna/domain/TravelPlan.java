@@ -1,10 +1,7 @@
 package com.aisinna.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,10 +18,13 @@ public class TravelPlan extends BaseEntity {
 
     private String shareID;
 
-    @ManyToMany
-    private List<TravelSpot> travelSpotList = new ArrayList<>();
+    @OneToMany(mappedBy = "travelPlan", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default // 필드 초기화
+    private List<TravelItineraryDay> itineraryDays = new ArrayList<>();
 
+    @Setter
     @OneToOne(mappedBy = "travelPlan")
+    @JoinColumn(name = "travel_recommend_id")
     private TravelRecommend travelRecommend;
 
     @PrePersist
@@ -32,5 +32,10 @@ public class TravelPlan extends BaseEntity {
         if (this.shareID == null) {
             this.shareID = UUID.randomUUID().toString();
         }
+    }
+
+    public void addItineraryDay(TravelItineraryDay day) {
+        this.itineraryDays.add(day);
+        day.setTravelPlan(this);
     }
 }

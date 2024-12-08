@@ -1,9 +1,14 @@
 package com.aisinna.service.travel;
 
+import com.aisinna.converter.TravelPlanMapper;
 import com.aisinna.domain.*;
+import com.aisinna.dto.TravelPlanResponseDTO;
 import com.aisinna.dto.tourAPI.OpenAPIResponseDTO;
 import com.aisinna.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -19,30 +24,65 @@ public class TravelService {
     private final TravelRecommendRepository travelRecommendRepository;
     private final TravelPlanRepository travelPlanRepository;
     private final TravelSpotRepository travelSpotRepository;
+    private final TravelPlanMapper travelPlanMapper;
 
     private final RestTemplate restTemplate;
 
 
 
     // 추천 조회 시 TravelPlan 생성
-    public TravelPlan createTravelPlanFromRecommend(Long recommendId) {
-        TravelRecommend recommend = travelRecommendRepository.findById(recommendId)
+    @Retryable(
+            maxAttempts = 3,                    // 최대 시도 횟수
+            backoff = @Backoff(delay = 1000)    // 재시도 간격 (밀리초)
+    )
+    @Transactional
+    public TravelPlan createTravelPlanFromRecommend(Long recommendId, int people, int cost) {
+        TravelRecommend travelRecommend = travelRecommendRepository.findById(recommendId)
                 .orElseThrow(() -> new IllegalArgumentException("Recommendation not found"));
 
-        TravelPlan travelPlan = TravelPlan.builder()
-                .title(recommend.getTitle())
-                .shareID(UUID.randomUUID().toString())
-                .build();
+        RestTemplate restTemplate = new RestTemplate();
+        String fastApiUrl = "http://152.67.209.153:8000/ai/travel-plan";
 
-//        List<TravelSpot> spots = generateSpotsForTravelPlan(travelPlan);
-//        travelPlan.getTravelSpotList().addAll(spots);
-//
-//        return travelPlanRepository.save(travelPlan);
+        Map<String, Object> requestPayload = Map.of(
+                "title", travelRecommend.getTitle(),
+                "location", travelRecommend.getLocation(),
+                "image", travelRecommend.getImage(),
+                "duration", travelRecommend.getDuration(),
+                "description", travelRecommend.getDescription(),
+                "people", people,
+                "cost", cost
+        );
 
-        return null;
+        // 3. FastAPI 호출
+        ResponseEntity<TravelPlanResponseDTO> response = restTemplate.postForEntity(
+                fastApiUrl,
+                requestPayload,
+                TravelPlanResponseDTO.class
+        );
+
+        if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+            throw new RuntimeException("FastAPI 요청 실패");
+        }
+
+        TravelPlanResponseDTO responseDTO = response.getBody();
+
+        // 4. TravelPlan 저장
+        TravelPlan travelPlan = travelPlanMapper.toEntity(responseDTO);
+
+
+        travelPlanRepository.findByTravelRecommend(travelRecommend)
+                .ifPresent(travelPlanRepository::delete);
+
+
+        travelPlan = travelPlanRepository.save(travelPlan);
+
+        travelRecommend.setTravelPlan(travelPlan);
+        travelRecommendRepository.save(travelRecommend);
+
+        return travelPlan;
     }
 
-
+    @Transactional
     public void saveTravelSpots(OpenAPIResponseDTO openAPIResponseDTO) {
         // DTO 리스트를 엔티티 리스트로 변환
         List<TravelSpot> travelSpots = openAPIResponseDTO.getResponse().getBody().getItems().getItem().stream()
