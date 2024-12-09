@@ -115,8 +115,8 @@ public class FestivalDetailDTO {
 
     public static FestivalDetailResponseDTO toResponse(FestivalDetailDTO festivalDetailDTO) {
 
-        CommonDTO common = festivalDetailDTO.getCommons().get(0);
-        IntroDTO intro = festivalDetailDTO.getIntros().get(0);
+        CommonDTO common = festivalDetailDTO.getCommons().isEmpty() ? null : festivalDetailDTO.getCommons().get(0);
+        IntroDTO intro = festivalDetailDTO.getIntros().isEmpty() ? null : festivalDetailDTO.getIntros().get(0);
         List<ImageDTO> images = festivalDetailDTO.getImages();
 
         HashSet<String> originImgUrlSet = new HashSet<>();
