@@ -19,13 +19,13 @@ public class UserTravel extends BaseEntity {
     private LocalDate startDate;
     private LocalDate endDate;
 
-    @ManyToOne(optional = false) // UserInfo와 다대일 관계 설정
+    @ManyToOne(optional = false)
     @JoinColumn(name = "user_info_id", nullable = false)
     private UserInfo userInfo;
 
-    @ManyToOne(optional = false) // TravelRecommend와 다대일 관계 설정
-    @JoinColumn(name = "travel_recommend_id", nullable = false)
-    private TravelRecommend travelRecommend;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "travel_plan_id", nullable = false)
+    private TravelPlan travelPlan;
 
     @OneToMany(mappedBy = "userTravel", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TravelReview> travelReviews;

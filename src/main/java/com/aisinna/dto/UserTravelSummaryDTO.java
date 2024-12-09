@@ -7,6 +7,7 @@ import lombok.Getter;
 @Builder
 public class UserTravelSummaryDTO {
     private Long userTravelId;
+    private String thumbnailImage;
     private String startDate;
     private String endDate;
     private String region;

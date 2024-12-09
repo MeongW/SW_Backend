@@ -4,6 +4,7 @@ import com.aisinna.converter.TravelPlanMapper;
 import com.aisinna.domain.*;
 import com.aisinna.dto.TravelPlanResponseDTO;
 import com.aisinna.dto.tourAPI.OpenAPIResponseDTO;
+import com.aisinna.dto.tourAPI.TravelSpotDetailDTO;
 import com.aisinna.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +34,7 @@ public class TravelService {
     // 추천 조회 시 TravelPlan 생성
     @Retryable(
             maxAttempts = 3,                    // 최대 시도 횟수
-            backoff = @Backoff(delay = 1000)    // 재시도 간격 (밀리초)
+            backoff = @Backoff(delay = 2000)    // 재시도 간격 (밀리초)
     )
     @Transactional
     public TravelPlan createTravelPlanFromRecommend(Long recommendId, int people, int cost) {
@@ -68,22 +69,14 @@ public class TravelService {
 
         // 4. TravelPlan 저장
         TravelPlan travelPlan = travelPlanMapper.toEntity(responseDTO);
-
-
-        travelPlanRepository.findByTravelRecommend(travelRecommend)
-                .ifPresent(travelPlanRepository::delete);
-
-
+        travelPlan.setTravelRecommend(travelRecommend);
         travelPlan = travelPlanRepository.save(travelPlan);
-
-        travelRecommend.setTravelPlan(travelPlan);
-        travelRecommendRepository.save(travelRecommend);
 
         return travelPlan;
     }
 
     @Transactional
-    public void saveTravelSpots(OpenAPIResponseDTO openAPIResponseDTO) {
+    public void saveTravelSpots(OpenAPIResponseDTO<List<TravelSpotDetailDTO>> openAPIResponseDTO) {
         // DTO 리스트를 엔티티 리스트로 변환
         List<TravelSpot> travelSpots = openAPIResponseDTO.getResponse().getBody().getItems().getItem().stream()
                 .map(item -> TravelSpot.builder()

@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -109,7 +111,7 @@ public class FestivalService {
         return FestivalDetailDTO.toResponse(detail);
     }
 
-    public <T> List<T> getResponseItems(OpenAPIResponseDTO response, Class<T> responseType) {
+    public <T> List<T> getResponseItems(OpenAPIResponseDTO<List<T>> response, Class<T> responseType) {
         if (response != null && "0000".equals(response.getResponse().getHeader().getResultCode())) {
             if (response.getResponse().getBody() != null &&
                     response.getResponse().getBody().getItems() != null &&
@@ -130,30 +132,37 @@ public class FestivalService {
         return Collections.emptyList();
     }
 
-
-    private <T> T fetchDetailData(String apiUrl, Class<T> responseType) {
+    private <T> List<T> fetchData(String apiUrl, Class<T> responseType) {
         try {
-            apiUrl = URLDecoder.decode(apiUrl, StandardCharsets.UTF_8);
-            log.info("Fetching data from API: {}", apiUrl);
-            OpenAPIResponseDTO response = restTemplate.getForObject(apiUrl, OpenAPIResponseDTO.class);
-            System.out.println(response);
-            List<T> items = getResponseItems(response, responseType);
-            return items.isEmpty() ? null : items.get(0);
-        } catch (RestClientException e) {
-            log.warn("Failed to fetch data from API: {}. Error: {}", apiUrl, e.getMessage());
-            return null;
-        }
-    }
+            String decodedUrl = URLDecoder.decode(apiUrl, StandardCharsets.UTF_8);
+            log.info("Fetching data from API: {}", decodedUrl);
 
-    private <T> List<T> fetchDetailDataList(String apiUrl, Class<T> responseType) {
-        try {
-            apiUrl = URLDecoder.decode(apiUrl, StandardCharsets.UTF_8);
-            log.info("Fetching data from API: {}", apiUrl);
-            OpenAPIResponseDTO response = restTemplate.getForObject(apiUrl, OpenAPIResponseDTO.class);
+            ParameterizedTypeReference<OpenAPIResponseDTO<List<T>>> typeRef =
+                    new ParameterizedTypeReference<>() {};
+
+            OpenAPIResponseDTO<List<T>> response = restTemplate.exchange(
+                    decodedUrl,
+                    HttpMethod.GET,
+                    null,
+                    typeRef
+            ).getBody();
+
             return getResponseItems(response, responseType);
         } catch (RestClientException e) {
             log.warn("Failed to fetch data from API: {}. Error: {}", apiUrl, e.getMessage());
             return Collections.emptyList();
         }
     }
+
+    // items 1개인 경우
+    private <T> T fetchDetailData(String apiUrl, Class<T> responseType) {
+        List<T> items = fetchData(apiUrl, responseType);
+        return items.isEmpty() ? null : items.get(0);
+    }
+
+    // items 여러개인 경우
+    private <T> List<T> fetchDetailDataList(String apiUrl, Class<T> responseType) {
+        return fetchData(apiUrl, responseType);
+    }
+
 }

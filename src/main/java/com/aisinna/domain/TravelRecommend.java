@@ -19,13 +19,8 @@ public class TravelRecommend extends BaseEntity {
     private String image;
     private String duration;
 
-    @OneToOne
-    @JoinColumn(name = "travel_plan_id")
-    @Setter
-    private TravelPlan travelPlan;
-
     @OneToMany(mappedBy = "travelRecommend", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserTravel> userTravels = new ArrayList<>();
+    private List<TravelPlan> travelPlan;
 
     @OneToMany(mappedBy = "travelRecommend", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TravelLike> travelLikes = new ArrayList<>();

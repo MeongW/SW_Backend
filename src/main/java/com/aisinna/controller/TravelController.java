@@ -41,6 +41,7 @@ public class TravelController {
     // 사용자 필요
     // 내 여행 계획 모두
     // 사용자의 모든 여행 썸네일 반환
+    @Operation(summary = "내 여행 조회", description = "내 여행 조회 API")
     @GetMapping("/my")
     public ResponseEntity<ApiResponseDTO<List<UserTravelSummaryDTO>>> getAllMyTravel(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -54,6 +55,10 @@ public class TravelController {
 
     // 내 여행 상세 조회
     // 특정 UserTravel에 맞춰 TravelPlan 반환
+    @Operation(summary = "내 여행 상세 조회", description = "내 여행 상세 조회 API",
+            parameters = {
+                    @Parameter(in = ParameterIn.PATH, name = "travelId", description = "여행 ID", required = true, example = "1")
+            })
     @GetMapping("/my/{travelId}")
     public ResponseEntity<ApiResponseDTO<TravelPlanDTO>> getMyTravel(
             @PathVariable("travelId") Long travelId,
@@ -68,19 +73,26 @@ public class TravelController {
 
     // 내 여행 저장
     @PostMapping
-    public ResponseEntity<ApiResponseDTO<Void>> saveUserTravel(
-            @RequestParam Long travelRecommendId,
+    public ResponseEntity<ApiResponseDTO<CreateResponseDTO>> saveUserTravel(
+            @RequestParam Long travelPlanId,
             @RequestParam @DateTimeFormat(pattern = "yyyyMMdd") LocalDate startDate,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         if (userDetails == null) {
             throw new TravelExceptionHandler(ErrorMessage.AUTHENTICATION_REQUIRED);
         }
 
-        userTravelService.saveUserTravel(userDetails.getUser().getUserInfo(), travelRecommendId, startDate);
-        return ApiResponse.success(SuccessMessage.RESOURCE_CREATED);
+        Long userTravelId = userTravelService.saveUserTravel(userDetails.getUser().getUserInfo(), travelPlanId, startDate);
+        return ApiResponse.success(
+                SuccessMessage.RESOURCE_CREATED,
+                CreateResponseDTO.builder()
+                        .success(true)
+                        .message("성공")
+                        .id(userTravelId.toString())
+                        .build());
     }
 
     // 다가오는 1개
+    @Operation(summary = "다가오는 여행 조회", description = "다가오는 여행 조회 API")
     @GetMapping("/oncoming")
     public ResponseEntity<ApiResponseDTO<OncomingTravelDTO>> getOncomingTravel(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -104,6 +116,10 @@ public class TravelController {
     }
 
     // 내 여행 삭제
+    @Operation(summary = "내 여행 삭제", description = "내 여행 삭제 API",
+            parameters = {
+                    @Parameter(in = ParameterIn.PATH, name = "travelId", description = "여행 ID", required = true, example = "1")
+            })
     @DeleteMapping("/my/{travelId}")
     public ResponseEntity<ApiResponseDTO<Object>> deleteMyTravel(
             @PathVariable("travelId") Long travelId,
@@ -210,13 +226,35 @@ public class TravelController {
 
 
 
-    // AI 추천 여행지 상세 조회
-    @GetMapping("/recommend/{recommendId}")
-    public ResponseEntity<TravelPlanDTO> createTravelPlan(
-            @PathVariable Long recommendId,
+    // AI 추천 테마 일정 생성
+    @Operation(summary = "AI 추천 테마 일정 생성", description = "AI 추천 테마 일정 생성 API",
+        parameters = {
+            @Parameter(in = ParameterIn.QUERY, name = "startDate", description = "여행 시작 날짜", required = true, example = "20240101"),
+            @Parameter(in = ParameterIn.QUERY, name = "people", description = "인원 수", required = true, example = "2"),
+            @Parameter(in = ParameterIn.QUERY, name = "cost", description = "예산", required = true, example = "100000")
+        }
+    )
+    @PostMapping("/plan")
+    public ResponseEntity<ApiResponseDTO<CreateResponseDTO>> createUserTravelPlan(
+            @RequestParam @DateTimeFormat(pattern = "yyyyMMdd") LocalDate startDate,
             @RequestParam int people,
-            @RequestParam int cost) {
-        TravelPlan travelPlan = travelService.createTravelPlanFromRecommend(recommendId, people, cost);
-        return ResponseEntity.ok(TravelPlanDTO.fromEntity(travelPlan));
+            @RequestParam int cost,
+            @RequestBody TravelThemeRecommendationDTO recommend,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        if (userDetails == null) {
+            throw new TravelExceptionHandler(ErrorMessage.AUTHENTICATION_REQUIRED);
+        }
+
+
+        Long userTravelId = userTravelService.createUserTravelPlan(userDetails.getUser().getUserInfo(), recommend, people, cost, startDate);
+
+
+        return ApiResponse.success(
+                SuccessMessage.RESOURCE_CREATED,
+                CreateResponseDTO.builder()
+                        .message("성공")
+                        .success(true)
+                        .id(userTravelId.toString()).build());
     }
 }

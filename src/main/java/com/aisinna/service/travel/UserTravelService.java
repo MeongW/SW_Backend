@@ -6,10 +6,14 @@ import com.aisinna.domain.UserInfo;
 import com.aisinna.domain.UserTravel;
 import com.aisinna.dto.TravelPlanDTO;
 import com.aisinna.dto.UserTravelSummaryDTO;
+import com.aisinna.dto.openAI.TravelThemeRecommendationDTO;
+import com.aisinna.repository.TravelPlanRepository;
 import com.aisinna.repository.TravelRecommendRepository;
 import com.aisinna.repository.UserTravelRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -18,33 +22,31 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Slf4j
 public class UserTravelService {
 
     private final UserTravelRepository userTravelRepository;
-    private final TravelRecommendRepository travelRecommendRepository;
+    private final TravelPlanRepository travelPlanRepository;
+
+    private final TravelRecommendService travelRecommendService;
+    private final TravelService travelService;
 
     // 사용자 여행 생성
     @Transactional
-    public void saveUserTravel(UserInfo userInfo, Long travelRecommendId, LocalDate startDate) {
+    public Long saveUserTravel(UserInfo userInfo, Long travelPlanId, LocalDate startDate) {
 
-        // TravelRecommend 조회
-        TravelRecommend travelRecommend = travelRecommendRepository.findById(travelRecommendId)
-                .orElseThrow(() -> new IllegalArgumentException("Travel Recommend Not Found."));
 
-        if (travelRecommend.getTravelPlan() == null) {
-            throw new IllegalArgumentException("Travel Plan Not Found.");
-        }
+        TravelPlan travelPlan = travelPlanRepository.findById(travelPlanId)
+                .orElseThrow(() -> new IllegalArgumentException("Travel Plan Not Found."));
 
-        // UserTravel 생성
         UserTravel userTravel = UserTravel.builder()
                 .userInfo(userInfo)
                 .startDate(startDate)
-                .endDate(startDate.plusDays(travelRecommend.getTravelPlan().getItineraryDays().size()-1))
-                .travelRecommend(travelRecommend)
+                .endDate(startDate.plusDays(travelPlan.getItineraryDays().size()-1))
+                .travelPlan(travelPlan)
                 .build();
 
-        userTravelRepository.save(userTravel);
+        return userTravelRepository.save(userTravel).getId();
     }
 
 
@@ -53,6 +55,7 @@ public class UserTravelService {
 
         return userTravelRepository.findByUserInfo(userInfo).stream()
                 .map(travel -> UserTravelSummaryDTO.builder()
+                        .thumbnailImage(travel.getTravelPlan().getTravelRecommend().getImage())
                         .userTravelId(travel.getId())
                         .startDate(travel.getStartDate().toString())
                         .endDate(travel.getEndDate().toString())
@@ -68,7 +71,7 @@ public class UserTravelService {
                 .orElseThrow(() -> new IllegalArgumentException("Travel not found"));
 
         // TravelPlan 가져오기
-        TravelPlan travelPlan = userTravel.getTravelRecommend().getTravelPlan();
+        TravelPlan travelPlan = userTravel.getTravelPlan();
 
         // TravelPlan을 DTO로 변환
         return convertToMyTravelPlanDTO(travelPlan, userTravel);
@@ -99,5 +102,16 @@ public class UserTravelService {
         return dto;
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Long createUserTravelPlan(UserInfo userInfo, TravelThemeRecommendationDTO recommendDTO, int people, int cost, LocalDate startDate) {
+        try {
+            Long recommendId = travelRecommendService.saveTravelRecommend(recommendDTO).getId();
+            TravelPlan travelPlan = travelService.createTravelPlanFromRecommend(recommendId, people, cost);
 
+            return this.saveUserTravel(userInfo, travelPlan.getId(), startDate);
+        } catch (Exception e) {
+            log.error("Exception occurred during transaction: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
 }

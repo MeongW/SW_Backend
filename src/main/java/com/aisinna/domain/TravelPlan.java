@@ -22,10 +22,12 @@ public class TravelPlan extends BaseEntity {
     @Builder.Default // 필드 초기화
     private List<TravelItineraryDay> itineraryDays = new ArrayList<>();
 
+    @ManyToOne
     @Setter
-    @OneToOne(mappedBy = "travelPlan")
-    @JoinColumn(name = "travel_recommend_id")
     private TravelRecommend travelRecommend;
+
+    @OneToMany(mappedBy = "travelPlan", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserTravel> userTravels = new ArrayList<>();
 
     @PrePersist
     private void generateShareID() {
