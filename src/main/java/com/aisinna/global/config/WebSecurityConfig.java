@@ -87,7 +87,8 @@ public class WebSecurityConfig {
                         "https://152.67.209.153:8080",
                         "http://152.67.209.153:8080",
                         "http://localhost:5173",
-                        "http://localhost:8080"
+                        "http://localhost:8080",
+                        "http://localhost:8081"
                 )
         );
         corsConfiguration.setAllowedHeaders(
