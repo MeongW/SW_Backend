@@ -1,14 +1,12 @@
 package com.aisinna.service.travel;
 
 import com.aisinna.domain.TravelPlan;
-import com.aisinna.domain.TravelRecommend;
 import com.aisinna.domain.UserInfo;
 import com.aisinna.domain.UserTravel;
 import com.aisinna.dto.TravelPlanDTO;
 import com.aisinna.dto.UserTravelSummaryDTO;
 import com.aisinna.dto.openAI.TravelThemeRecommendationDTO;
 import com.aisinna.repository.TravelPlanRepository;
-import com.aisinna.repository.TravelRecommendRepository;
 import com.aisinna.repository.UserTravelRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +31,7 @@ public class UserTravelService {
 
     // 사용자 여행 생성
     @Transactional
-    public Long saveUserTravel(UserInfo userInfo, Long travelPlanId, LocalDate startDate) {
+    public Long saveUserTravel(UserInfo userInfo, Long travelPlanId, LocalDate startDate, Integer peopleCount) {
 
 
         TravelPlan travelPlan = travelPlanRepository.findById(travelPlanId)
@@ -41,6 +39,7 @@ public class UserTravelService {
 
         UserTravel userTravel = UserTravel.builder()
                 .userInfo(userInfo)
+                .peopleCount(peopleCount)
                 .startDate(startDate)
                 .endDate(startDate.plusDays(travelPlan.getItineraryDays().size()-1))
                 .travelPlan(travelPlan)
@@ -80,7 +79,7 @@ public class UserTravelService {
     // 다가오는
     public UserTravel getOncomingTravel(UserInfo userInfo) {
 
-        return userTravelRepository.findFirstByUserInfoAndStartDateAfterOrderByStartDateAsc(userInfo, LocalDate.now())
+        return userTravelRepository.findFirstByUserInfoAndEndDateAfterOrderByStartDateAsc(userInfo, LocalDate.now())
                 .orElse(null);
     }
 
@@ -108,7 +107,7 @@ public class UserTravelService {
             Long recommendId = travelRecommendService.saveTravelRecommend(recommendDTO).getId();
             TravelPlan travelPlan = travelService.createTravelPlanFromRecommend(recommendId, people, cost);
 
-            return this.saveUserTravel(userInfo, travelPlan.getId(), startDate);
+            return this.saveUserTravel(userInfo, travelPlan.getId(), startDate, people);
         } catch (Exception e) {
             log.error("Exception occurred during transaction: {}", e.getMessage(), e);
             throw e;

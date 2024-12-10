@@ -12,8 +12,8 @@ public interface UserTravelRepository extends JpaRepository<UserTravel, Long> {
     List<UserTravel> findByUserInfoAndStartDateBetween(UserInfo userInfo, LocalDate startDate, LocalDate endDate);
     Optional<UserTravel> findByIdAndUserInfo(Long travelId, UserInfo userInfo);
 
-    Optional<UserTravel> findByUserInfo(UserInfo userInfo);
+    List<UserTravel> findByUserInfo(UserInfo userInfo);
 
-    Optional<UserTravel> findFirstByUserInfoAndStartDateAfterOrderByStartDateAsc(UserInfo userInfo, LocalDate startDate);
+    Optional<UserTravel> findFirstByUserInfoAndEndDateAfterOrderByStartDateAsc(UserInfo userInfo, LocalDate startDate);
 
 }

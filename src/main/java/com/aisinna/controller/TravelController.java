@@ -72,24 +72,24 @@ public class TravelController {
     }
 
     // 내 여행 저장
-    @PostMapping
-    public ResponseEntity<ApiResponseDTO<CreateResponseDTO>> saveUserTravel(
-            @RequestParam Long travelPlanId,
-            @RequestParam @DateTimeFormat(pattern = "yyyyMMdd") LocalDate startDate,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-        if (userDetails == null) {
-            throw new TravelExceptionHandler(ErrorMessage.AUTHENTICATION_REQUIRED);
-        }
-
-        Long userTravelId = userTravelService.saveUserTravel(userDetails.getUser().getUserInfo(), travelPlanId, startDate);
-        return ApiResponse.success(
-                SuccessMessage.RESOURCE_CREATED,
-                CreateResponseDTO.builder()
-                        .success(true)
-                        .message("성공")
-                        .id(userTravelId.toString())
-                        .build());
-    }
+//    @PostMapping
+//    public ResponseEntity<ApiResponseDTO<CreateResponseDTO>> saveUserTravel(
+//            @RequestParam Long travelPlanId,
+//            @RequestParam @DateTimeFormat(pattern = "yyyyMMdd") LocalDate startDate,
+//            @AuthenticationPrincipal CustomUserDetails userDetails) {
+//        if (userDetails == null) {
+//            throw new TravelExceptionHandler(ErrorMessage.AUTHENTICATION_REQUIRED);
+//        }
+//
+//        Long userTravelId = userTravelService.saveUserTravel(userDetails.getUser().getUserInfo(), travelPlanId, startDate,);
+//        return ApiResponse.success(
+//                SuccessMessage.RESOURCE_CREATED,
+//                CreateResponseDTO.builder()
+//                        .success(true)
+//                        .message("성공")
+//                        .id(userTravelId.toString())
+//                        .build());
+//    }
 
     // 다가오는 1개
     @Operation(summary = "다가오는 여행 조회", description = "다가오는 여행 조회 API")
@@ -105,6 +105,7 @@ public class TravelController {
         if (oncomingTravel != null) {
             OncomingTravelDTO oncomingTravelDTO = OncomingTravelDTO.builder()
                     .userTravelId(oncomingTravel.getId())
+                    .region(oncomingTravel.getTravelPlan().getTravelRecommend().getLocation())
                     .startDate(oncomingTravel.getStartDate().toString())
                     .endDate(oncomingTravel.getEndDate().toString())
                     .build();

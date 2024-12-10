@@ -19,6 +19,8 @@ public class UserTravel extends BaseEntity {
     private LocalDate startDate;
     private LocalDate endDate;
 
+    private Integer peopleCount;
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_info_id", nullable = false)
     private UserInfo userInfo;
