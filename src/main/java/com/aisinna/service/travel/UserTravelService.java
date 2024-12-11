@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -105,6 +106,16 @@ public class UserTravelService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Long createUserTravelPlan(UserInfo userInfo, TravelThemeRecommendationDTO recommendDTO, int people, int cost, LocalDate startDate) {
+
+//        Optional<UserTravel> existingTravel = userInfo.getUserTravelList().stream()
+//                .filter(userTravel -> userTravel.getTravelPlan().getTravelRecommend().getTitle().equals(recommendDTO.getTitle()))
+//                .findFirst();
+//
+//        if (existingTravel.isPresent()) {
+//
+//            return existingTravel.get().getId();
+//        }
+        
         try {
             Long recommendId = travelRecommendService.saveTravelRecommend(recommendDTO).getId();
             TravelPlan travelPlan = travelService.createTravelPlanFromRecommend(recommendId, people, cost);

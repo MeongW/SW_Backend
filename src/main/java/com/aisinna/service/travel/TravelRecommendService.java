@@ -18,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -64,13 +65,17 @@ public class TravelRecommendService {
     }
 
     public TravelRecommend saveTravelRecommend(TravelThemeRecommendationDTO recommend) {
-        return travelRecommendRepository.save(TravelRecommend.builder()
+
+        Optional<TravelRecommend> travelRecommend = travelRecommendRepository.findTravelRecommendByTitle(recommend.getTitle());
+
+        return travelRecommend.orElseGet(() -> travelRecommendRepository.save(TravelRecommend.builder()
                 .title(recommend.getTitle())
                 .description(recommend.getDescription())
                 .location(recommend.getLocation())
                 .image(recommend.getImage())
                 .duration(recommend.getDuration())
-                .build());
+                .build()));
+
     }
 
     public List<TravelRecommend> getRandom2TravelRecommends() {
