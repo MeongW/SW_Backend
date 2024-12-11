@@ -55,6 +55,7 @@ public class UserTravelService {
         return userTravelRepository.findByUserInfo(userInfo).stream()
                 .map(travel -> UserTravelSummaryDTO.builder()
                         .thumbnailImage(travel.getTravelPlan().getTravelRecommend().getImage())
+                        .region(travel.getTravelPlan().getTravelRecommend().getLocation())
                         .userTravelId(travel.getId())
                         .startDate(travel.getStartDate().toString())
                         .endDate(travel.getEndDate().toString())

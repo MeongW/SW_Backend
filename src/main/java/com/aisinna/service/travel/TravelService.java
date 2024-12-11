@@ -27,14 +27,11 @@ public class TravelService {
     private final TravelSpotRepository travelSpotRepository;
     private final TravelPlanMapper travelPlanMapper;
 
-    private final RestTemplate restTemplate;
-
-
 
     // 추천 조회 시 TravelPlan 생성
     @Retryable(
-            maxAttempts = 3,                    // 최대 시도 횟수
-            backoff = @Backoff(delay = 2000)    // 재시도 간격 (밀리초)
+            maxAttempts = 30,                    // 최대 시도 횟수
+            backoff = @Backoff(delay = 1000)    // 재시도 간격 (밀리초)
     )
     @Transactional
     public TravelPlan createTravelPlanFromRecommend(Long recommendId, int people, int cost) {
