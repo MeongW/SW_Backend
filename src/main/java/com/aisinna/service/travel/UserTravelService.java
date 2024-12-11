@@ -56,6 +56,7 @@ public class UserTravelService {
                 .map(travel -> UserTravelSummaryDTO.builder()
                         .thumbnailImage(travel.getTravelPlan().getTravelRecommend().getImage())
                         .region(travel.getTravelPlan().getTravelRecommend().getLocation())
+                        .theme(travel.getTravelPlan().getTravelRecommend().getTitle())
                         .userTravelId(travel.getId())
                         .startDate(travel.getStartDate().toString())
                         .endDate(travel.getEndDate().toString())
